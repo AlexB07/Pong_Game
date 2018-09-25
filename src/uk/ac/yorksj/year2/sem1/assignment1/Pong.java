@@ -16,6 +16,7 @@ public class Pong extends PApplet {
 	final private int width = 640;
 	// height of our window
 	final private int height = 480;
+	final private int radius = 10;
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 
@@ -46,20 +47,36 @@ public class Pong extends PApplet {
 		rect(20, mouseY, 10, 40);
 		fill(255);
 		// moving the ball and bouncing the ball of boarder
-
+		isHittingPlayer(ballX, ballY);
 		ballX += (ballSpeedX * ballDirectionX);
 		ballY += (ballSpeedY * ballDirectionY);
 
-		if (ballX > width - 20) {
+		if (ballX > width - radius+4 || ballX < radius+4)  {
+			System.out.println("MOUSE X: "+ mouseX + " Y: " + mouseY + "");
+			System.out.println("BALL X:  " + ballX + " Y: " + ballY  + "");
 			ballDirectionX *= -1;
 		}
-		if (ballY > height - 20 || ballY < 20) {
+		if (ballY > height - radius+4 || ballY < radius+4) {
 			ballDirectionY *= -1;
-			System.out.println("test Y " + ballDirectionY);
+			//System.out.println("test Y " + ballDirectionY);
 		}
+		
 		// Draw the ball
 		
-		ellipse(ballX, ballY, 32, 32);
+		ellipse(ballX, ballY, radius*2, radius*2);
 		fill(0);
+	}
+	
+	public boolean isHittingPlayer(int ballPosX, int ballPosY) {
+		if (ballPosX-radius+4 < 30) {
+		
+		if (((mouseY+40) > ballPosY) && (mouseY < (ballPosY))) {
+			System.out.println("test");
+			ballDirectionX*=-1;
+			return true;
+		}
+		}
+		
+		return false;
 	}
 }
