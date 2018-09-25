@@ -1,6 +1,6 @@
 package uk.ac.yorksj.year2.sem1.assignment1;
 
-public class paddle {
+public class paddle{
 	
 	private int width;
 	private int height;

@@ -69,7 +69,7 @@ public class Pong extends PApplet {
 	
 	public boolean isHittingPlayer(int ballPosX, int ballPosY) {
 		if (ballPosX-radius+4 < 30) {
-		
+		//TODO fix bounce of edges
 		if (((mouseY+40) > ballPosY) && (mouseY < (ballPosY))) {
 			System.out.println("test");
 			ballDirectionX*=-1;
