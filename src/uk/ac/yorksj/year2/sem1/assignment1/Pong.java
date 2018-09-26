@@ -22,8 +22,8 @@ public class Pong extends PApplet {
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 
-	private paddle player1 = new paddle(20, 0, 10, 50);
-	private paddle player2 = new paddle((width - 20), 0, 10, 50);
+	private paddle player1 = new paddle(20, 0, 10, 80);
+	private paddle player2 = new paddle((width - 20), 0, 10, 80);
 
 	public static void main(String[] args) {
 		// Set up the processing library
@@ -54,7 +54,6 @@ public class Pong extends PApplet {
 		fill(255);
 		// moving the ball and bouncing the ball of boarder
 		isHittingPlayer(ballX, ballY);
-		System.out.println(player2.getPosX());
 		moveBall();
 		drawBall();
 		// Draw the ball
@@ -82,18 +81,17 @@ public class Pong extends PApplet {
 	}
 
 	public boolean isHittingPlayer(int ballPosX, int ballPosY) {
-		if (ballPosX - radius + 4 < 30) {
+		// Checks to see whether the ball and paddle are at the same X co-ordinate
+		if (ballPosX - radius + 4 < (player1.getWidth() + player1.getPosX())) {
 			// TODO fix bounce of edges
+			// Checks to see if the ball is in-line with any of the paddle
 			if (((player1.getPoxY() + player1.getHeight()) > ballPosY) && (player1.getPoxY() <= (ballPosY))) {
-				System.out.println("test");
 				ballDirectionX *= -1;
 				return true;
 			}
 		} else if (ballPosX - radius + 4 > 610) {
 			// TODO fix bounce of edges
-			System.out.println("test 2");
 			if (((player2.getPoxY() + player2.getHeight()) > ballPosY) && (player2.getPoxY() <= (ballPosY))) {
-				System.out.println("test");
 				ballDirectionX *= -1;
 				return true;
 			}
