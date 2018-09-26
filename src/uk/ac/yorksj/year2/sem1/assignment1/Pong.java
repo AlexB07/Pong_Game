@@ -19,12 +19,14 @@ public class Pong extends PApplet {
 	// height of our window
 	final private int height = 480;
 	final private int radius = 10;
+	// Ball direction
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 
-	private paddle player1 = new paddle(20, 0, 10, 80);
-	private paddle player2 = new paddle((width - 20), 0, 10, 80);
-
+	// Player paddles
+	private paddle player1 = new paddle(20, 0, 10, 80, 255);
+	private paddle player2 = new paddle((width - 20), 0, 10, 80, 255);
+	
 	public static void main(String[] args) {
 		// Set up the processing library
 		PApplet.main("uk.ac.yorksj.year2.sem1.assignment1.Pong");
@@ -56,7 +58,7 @@ public class Pong extends PApplet {
 		isHittingPlayer(ballX, ballY);
 		moveBall();
 		drawBall();
-		// Draw the ball
+		displayScore();
 
 	}
 
@@ -64,15 +66,20 @@ public class Pong extends PApplet {
 		ellipse(ballX, ballY, radius * 2, radius * 2);
 		fill(0);
 	}
-
 	// Move ball and bounce of walls
 	public void moveBall() {
 		ballX += (ballSpeedX * ballDirectionX);
 		ballY += (ballSpeedY * ballDirectionY);
 
 		if (ballX > width - radius + 4 || ballX < radius + 4) {
+			if (ballSpeedX > 0) {
+				player1.addScore();
+			}else
+				player2.addScore();
+
 			ballX = width / 2;
 			ballY = height / 2;
+
 		}
 		if (ballY > height - radius + 4 || ballY < radius + 4) {
 			ballDirectionY *= -1;
@@ -102,6 +109,13 @@ public class Pong extends PApplet {
 	public void drawPaddles() {
 		rect(player1.getPosX(), player1.getPoxY(), player1.getWidth(), player1.getHeight());
 		rect(player2.getPosX(), player2.getPoxY(), player2.getWidth(), player2.getHeight());
+	}
+	
+	public void displayScore() {
+		textSize(50);
+		text(player1.getScore(), 100, 40);
+		textSize(50);
+		text(player2.getScore(), width-100, 40);
 	}
 
 	public void keyPressed() {

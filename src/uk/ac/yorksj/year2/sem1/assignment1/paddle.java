@@ -7,6 +7,7 @@ public class paddle{
 	private int posX;
 	private int posY;
 	private int colour;
+	private int score;
 	
 	
 	public paddle() {
@@ -19,6 +20,16 @@ public class paddle{
 		this.width = w;
 		this.height = h;
 		this.colour = col;
+		this.score = 0;
+	}
+	
+	public int getScore() {
+		return this.score;
+	}
+	
+	public int addScore() {
+		this.score+=1;
+		return this.score;
 	}
 	
 	public int getWidth() {
