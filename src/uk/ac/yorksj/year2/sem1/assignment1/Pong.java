@@ -40,7 +40,7 @@ public class Pong extends PApplet {
 		Random r = new Random();
 		ballX = r.nextInt(width);
 		ballY = r.nextInt(height);
-		ballSpeedX = 4;
+		ballSpeedX = -4;
 		ballSpeedY = 0;
 	}
 
@@ -54,35 +54,50 @@ public class Pong extends PApplet {
 		fill(255);
 		// moving the ball and bouncing the ball of boarder
 		isHittingPlayer(ballX, ballY);
+		System.out.println(player2.getPosX());
+		moveBall();
+		drawBall();
+		// Draw the ball
+
+	}
+
+	public void drawBall() {
+		ellipse(ballX, ballY, radius * 2, radius * 2);
+		fill(0);
+	}
+
+	// Move ball and bounce of walls
+	public void moveBall() {
 		ballX += (ballSpeedX * ballDirectionX);
 		ballY += (ballSpeedY * ballDirectionY);
 
 		if (ballX > width - radius + 4 || ballX < radius + 4) {
-			System.out.println("MOUSE X: " + mouseX + " Y: " + mouseY + "");
-			System.out.println("BALL X:  " + ballX + " Y: " + ballY + "");
-			ballDirectionX *= -1;
+			ballX = width / 2;
+			ballY = height / 2;
 		}
 		if (ballY > height - radius + 4 || ballY < radius + 4) {
 			ballDirectionY *= -1;
 			// System.out.println("test Y " + ballDirectionY);
 		}
-
-		// Draw the ball
-
-		ellipse(ballX, ballY, radius * 2, radius * 2);
-		fill(0);
 	}
 
 	public boolean isHittingPlayer(int ballPosX, int ballPosY) {
 		if (ballPosX - radius + 4 < 30) {
 			// TODO fix bounce of edges
-			if (((player1.getPoxY() + 40) > ballPosY) && (player1.getPoxY() < (ballPosY))) {
+			if (((player1.getPoxY() + player1.getHeight()) > ballPosY) && (player1.getPoxY() <= (ballPosY))) {
+				System.out.println("test");
+				ballDirectionX *= -1;
+				return true;
+			}
+		} else if (ballPosX - radius + 4 > 610) {
+			// TODO fix bounce of edges
+			System.out.println("test 2");
+			if (((player2.getPoxY() + player2.getHeight()) > ballPosY) && (player2.getPoxY() <= (ballPosY))) {
 				System.out.println("test");
 				ballDirectionX *= -1;
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -105,4 +120,5 @@ public class Pong extends PApplet {
 			player2.addPosY();
 		}
 	}
+
 }
