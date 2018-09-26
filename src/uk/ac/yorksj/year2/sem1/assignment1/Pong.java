@@ -26,7 +26,7 @@ public class Pong extends PApplet {
 	// Player paddles
 	private paddle player1 = new paddle(20, 0, 10, 80, 255);
 	private paddle player2 = new paddle((width - 20), 0, 10, 80, 255);
-	
+
 	public static void main(String[] args) {
 		// Set up the processing library
 		PApplet.main("uk.ac.yorksj.year2.sem1.assignment1.Pong");
@@ -38,10 +38,8 @@ public class Pong extends PApplet {
 	}
 
 	public void setup() {
-		// Create a random initial position and speed for the ball
-		Random r = new Random();
-		ballX = r.nextInt(width);
-		ballY = r.nextInt(height);
+		ballX = width / 2;
+		ballY = height / 2;
 		ballSpeedX = -4;
 		ballSpeedY = 0;
 	}
@@ -53,6 +51,8 @@ public class Pong extends PApplet {
 		// Draw the player rectangle
 		// rect(20, mouseY, 10, 40);
 		drawPaddles();
+		movePaddles(player1);
+		movePaddles(player2);
 		fill(255);
 		// moving the ball and bouncing the ball of boarder
 		isHittingPlayer(ballX, ballY);
@@ -66,19 +66,18 @@ public class Pong extends PApplet {
 		ellipse(ballX, ballY, radius * 2, radius * 2);
 		fill(0);
 	}
+
 	// Move ball and bounce of walls
 	public void moveBall() {
 		ballX += (ballSpeedX * ballDirectionX);
 		ballY += (ballSpeedY * ballDirectionY);
 
-		if (ballX > width - radius + 4 || ballX < radius + 4) {
-			if (ballSpeedX > 0) {
-				player1.addScore();
-			}else
-				player2.addScore();
-
-			ballX = width / 2;
-			ballY = height / 2;
+		if (ballX > width - radius + 4) {
+			player1.addScore();
+			setup();
+		} else if (ballX < radius + 4) {
+			player2.addScore();
+			setup();
 
 		}
 		if (ballY > height - radius + 4 || ballY < radius + 4) {
@@ -110,27 +109,50 @@ public class Pong extends PApplet {
 		rect(player1.getPosX(), player1.getPoxY(), player1.getWidth(), player1.getHeight());
 		rect(player2.getPosX(), player2.getPoxY(), player2.getWidth(), player2.getHeight());
 	}
-	
+
+	// Display scores on screen
 	public void displayScore() {
 		textSize(50);
 		text(player1.getScore(), 100, 40);
 		textSize(50);
-		text(player2.getScore(), width-100, 40);
+		text(player2.getScore(), width - 100, 40);
 	}
 
+	// Creates keyboard input for players to use
 	public void keyPressed() {
+		setMovePaddles(keyCode, key, true);
+	}
+
+	// false key interaction keyboard input
+	public void keyReleased() {
+		setMovePaddles(keyCode, key, false);
+	}
+
+	// Update position of paddles
+	public void movePaddles(paddle name) {
+		if (name.getIsUp())
+			name.subPosY();
+		if (name.getIsDown())
+			name.addPosY();
+	}
+
+	// Allows the paddle(s) to move simultaneously
+	public void setMovePaddles(int keyCode, char key, boolean flag) {
 		if (key == 'w' || key == 'W') {
-			player1.subPosY();
+			player1.setIsUp(flag);
 		}
 		if (key == 's' | key == 'S') {
-			player1.addPosY();
+			player1.setIsDown(flag);
 		}
 		if (keyCode == UP) {
-			player2.subPosY();
+			player2.setIsUp(flag);
+			;
 		}
 		if (keyCode == DOWN) {
-			player2.addPosY();
+			player2.setIsDown(flag);
+			;
 		}
+
 	}
 
 }

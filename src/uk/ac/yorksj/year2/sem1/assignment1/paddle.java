@@ -8,6 +8,7 @@ public class paddle{
 	private int posY;
 	private int colour;
 	private int score;
+	private boolean isUp, isDown;
 	
 	
 	public paddle() {
@@ -60,6 +61,22 @@ public class paddle{
 	
 	public int getColour() {
 		return this.getColour();
+	}
+	
+	public boolean getIsUp() {
+		return this.isUp;
+	}
+	
+	public void setIsUp(boolean flag) {
+		this.isUp = flag;
+	}
+	
+	public boolean getIsDown() {
+		return this.isDown;
+	}
+	
+	public void setIsDown(boolean flag) {
+		this.isDown = flag;
 	}
 	
 
