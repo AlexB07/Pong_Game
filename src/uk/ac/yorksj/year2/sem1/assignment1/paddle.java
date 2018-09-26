@@ -6,17 +6,19 @@ public class paddle{
 	private int height;
 	private int posX;
 	private int posY;
+	private int colour;
 	
 	
 	public paddle() {
 		
 	}
 	
-	public paddle(int x, int y, int w, int h) {
+	public paddle(int x, int y, int w, int h, int col) {
 		this.posX = x;
 		this.posY = y;
 		this.width = w;
 		this.height = h;
+		this.colour = col;
 	}
 	
 	public int getWidth() {
@@ -43,6 +45,10 @@ public class paddle{
 	
 	public int getPoxY() {
 		return this.posY;
+	}
+	
+	public int getColour() {
+		return this.getColour();
 	}
 	
 
