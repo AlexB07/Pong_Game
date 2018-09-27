@@ -1,9 +1,6 @@
 package uk.ac.yorksj.year2.sem1.assignment1;
 
 import processing.core.PApplet;
-import java.util.Random;
-
-import javax.swing.event.SwingPropertyChangeSupport;
 
 public class Pong extends PApplet {
 	// x position of the ball
@@ -41,15 +38,13 @@ public class Pong extends PApplet {
 		ballX = width / 2;
 		ballY = height / 2;
 		ballSpeedX = -4;
-		ballSpeedY = 0;
+		ballSpeedY = 4;
 	}
 
 	public void draw() {
 
 		// Clear the background of the window
 		background(255, 255, 255);
-		// Draw the player rectangle
-		// rect(20, mouseY, 10, 40);
 		drawPaddles();
 		movePaddles(player1);
 		movePaddles(player2);
@@ -72,7 +67,7 @@ public class Pong extends PApplet {
 		ballX += (ballSpeedX * ballDirectionX);
 		ballY += (ballSpeedY * ballDirectionY);
 
-		if (ballX > width - radius + 4) {
+		if (ballX > 620) {
 			player1.addScore();
 			setup();
 		} else if (ballX < radius + 4) {
@@ -128,12 +123,14 @@ public class Pong extends PApplet {
 		setMovePaddles(keyCode, key, false);
 	}
 
-	// Update position of paddles
+	// Update position of paddles and restricts paddles going off the screen
 	public void movePaddles(paddle name) {
-		if (name.getIsUp())
+
+		if (name.getIsUp() && name.getPoxY() > 5)
 			name.subPosY();
-		if (name.getIsDown())
+		if (name.getIsDown() && name.getPoxY() < (height-name.getHeight()))
 			name.addPosY();
+
 	}
 
 	// Allows the paddle(s) to move simultaneously
