@@ -15,14 +15,17 @@ public class Pong extends PApplet {
 	final private int width = 640;
 	// height of our window
 	final private int height = 480;
+	//radius of the ball
 	final private int radius = 10;
 	// Ball direction
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
-
+	//set win score here
+	final private int winScore = 10;
+	
 	// Player paddles
-	private paddle player1 = new paddle(20, 0, 10, 80, 255);
-	private paddle player2 = new paddle((width - 20), 0, 10, 80, 255);
+	private paddle player1 = new paddle(20, 0, 10, 80, 255, "player 1");
+	private paddle player2 = new paddle((width - 20), 0, 10, 80, 255, "player 2");
 
 	public static void main(String[] args) {
 		// Set up the processing library
@@ -37,7 +40,7 @@ public class Pong extends PApplet {
 	public void setup() {
 		ballX = width / 2;
 		ballY = height / 2;
-		ballSpeedX = -4;
+		ballSpeedX = 4;
 		ballSpeedY = 4;
 	}
 
@@ -87,13 +90,13 @@ public class Pong extends PApplet {
 		if (ballPosX - radius + 4 < (player1.getWidth() + player1.getPosX())) {
 			// TODO fix bounce of edges
 			// Checks to see if the ball is in-line with any of the paddle
-			if (((player1.getPoxY() + player1.getHeight()) > ballPosY) && (player1.getPoxY() <= (ballPosY))) {
+			if (((player1.getPosY() + player1.getHeight()) > ballPosY) && (player1.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
 				return true;
 			}
 		} else if (ballPosX - radius + 4 > 610) {
 			// TODO fix bounce of edges
-			if (((player2.getPoxY() + player2.getHeight()) > ballPosY) && (player2.getPoxY() <= (ballPosY))) {
+			if (((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
 				return true;
 			}
@@ -102,8 +105,8 @@ public class Pong extends PApplet {
 	}
 
 	public void drawPaddles() {
-		rect(player1.getPosX(), player1.getPoxY(), player1.getWidth(), player1.getHeight());
-		rect(player2.getPosX(), player2.getPoxY(), player2.getWidth(), player2.getHeight());
+		rect(player1.getPosX(), player1.getPosY(), player1.getWidth(), player1.getHeight());
+		rect(player2.getPosX(), player2.getPosY(), player2.getWidth(), player2.getHeight());
 	}
 
 	// Display scores on screen
@@ -113,15 +116,23 @@ public class Pong extends PApplet {
 		textSize(50);
 		text(player2.getScore(), width - 100, 40);
 	}
-	
+	//Checks to see if the player has won the game
 	public void gameOver() {
 		if (player1.getScore() >=10) {
-			textSize(26);
-			text("Player 1 Wins", width/2, 40);
+			endGame(player1);
+			
 		}else if (player2.getScore() >=10) {
-			text("Player 2 Wins", width/2, 40);
+			endGame(player2);
 		}
 	}
+	
+	public void endGame(paddle name) {
+		textSize(26);
+		text(name.getName() + " Wins!", (width/2) - 100, 40);
+		ballSpeedX = 0;
+		ballSpeedY = 0;
+	}
+	
 
 	// Creates keyboard input for players to use
 	public void keyPressed() {
@@ -136,9 +147,9 @@ public class Pong extends PApplet {
 	// Update position of paddles and restricts paddles going off the screen
 	public void movePaddles(paddle name) {
 
-		if (name.getIsUp() && name.getPoxY() > 5)
+		if (name.getIsUp() && name.getPosY() > 5)
 			name.subPosY();
-		if (name.getIsDown() && name.getPoxY() < (height-name.getHeight()))
+		if (name.getIsDown() && name.getPosY() < (height-name.getHeight()))
 			name.addPosY();
 
 	}
