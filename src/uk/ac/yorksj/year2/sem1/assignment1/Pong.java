@@ -54,6 +54,7 @@ public class Pong extends PApplet {
 		moveBall();
 		drawBall();
 		displayScore();
+		gameOver();
 
 	}
 
@@ -111,6 +112,15 @@ public class Pong extends PApplet {
 		text(player1.getScore(), 100, 40);
 		textSize(50);
 		text(player2.getScore(), width - 100, 40);
+	}
+	
+	public void gameOver() {
+		if (player1.getScore() >=10) {
+			textSize(26);
+			text("Player 1 Wins", width/2, 40);
+		}else if (player2.getScore() >=10) {
+			text("Player 2 Wins", width/2, 40);
+		}
 	}
 
 	// Creates keyboard input for players to use
