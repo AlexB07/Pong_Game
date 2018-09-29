@@ -15,14 +15,16 @@ public class Pong extends PApplet {
 	final private int width = 640;
 	// height of our window
 	final private int height = 480;
-	//radius of the ball
+	// radius of the ball
 	final private int radius = 10;
 	// Ball direction
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
-	//set win score here
+	// set win score here
 	final private int winScore = 10;
-	
+
+	private boolean gameFlag = true;
+
 	// Player paddles
 	private paddle player1 = new paddle(20, 0, 10, 80, 255, "player 1");
 	private paddle player2 = new paddle((width - 20), 0, 10, 80, 255, "player 2");
@@ -116,23 +118,26 @@ public class Pong extends PApplet {
 		textSize(50);
 		text(player2.getScore(), width - 100, 40);
 	}
-	//Checks to see if the player has won the game
+
+	// Checks to see if the player has won the game
 	public void gameOver() {
-		if (player1.getScore() >=10) {
+		if (player1.getScore() >= 10) {
 			endGame(player1);
-			
-		}else if (player2.getScore() >=10) {
+
+		} else if (player2.getScore() >= 10) {
 			endGame(player2);
 		}
 	}
-	
+
+	// Stops games movement, when either player wins
 	public void endGame(paddle name) {
 		textSize(26);
-		text(name.getName() + " Wins!", (width/2) - 100, 40);
+		text(name.getName() + " wins!", (width / 2) - 100, 40);
 		ballSpeedX = 0;
 		ballSpeedY = 0;
+		gameFlag = false;
+
 	}
-	
 
 	// Creates keyboard input for players to use
 	public void keyPressed() {
@@ -149,26 +154,30 @@ public class Pong extends PApplet {
 
 		if (name.getIsUp() && name.getPosY() > 5)
 			name.subPosY();
-		if (name.getIsDown() && name.getPosY() < (height-name.getHeight()))
+		if (name.getIsDown() && name.getPosY() < (height - name.getHeight()))
 			name.addPosY();
 
 	}
 
 	// Allows the paddle(s) to move simultaneously
 	public void setMovePaddles(int keyCode, char key, boolean flag) {
-		if (key == 'w' || key == 'W') {
-			player1.setIsUp(flag);
-		}
-		if (key == 's' | key == 'S') {
-			player1.setIsDown(flag);
-		}
-		if (keyCode == UP) {
-			player2.setIsUp(flag);
-			;
-		}
-		if (keyCode == DOWN) {
-			player2.setIsDown(flag);
-			;
+		if (gameFlag) {
+
+			if (key == 'w' || key == 'W') {
+				player1.setIsUp(flag);
+			}
+			if (key == 's' | key == 'S') {
+				player1.setIsDown(flag);
+			}
+			if (keyCode == UP) {
+				player2.setIsUp(flag);
+				;
+			}
+			if (keyCode == DOWN) {
+				player2.setIsDown(flag);
+				;
+			}
+
 		}
 
 	}
