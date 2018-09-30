@@ -1,6 +1,7 @@
 package uk.ac.yorksj.year2.sem1.assignment1;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class Pong extends PApplet {
 	// x position of the ball
@@ -23,7 +24,13 @@ public class Pong extends PApplet {
 	// set win score here
 	final private int winScore = 10;
 
+	// flag for the game over
 	private boolean gameFlag = true;
+	// keeps track of how many time the players have hit the ball between them
+	private int rally = 0;
+	
+	//Stores background image
+	private PImage bg;
 
 	// Player paddles
 	private paddle player1 = new paddle(20, 0, 10, 80, 255, "player 1");
@@ -37,33 +44,40 @@ public class Pong extends PApplet {
 	public void settings() {
 		// Set our window size
 		size(width, height);
+		
 	}
 
 	public void setup() {
+		frameRate(60);
+		smooth();
 		ballX = width / 2;
 		ballY = height / 2;
 		ballSpeedX = 4;
-		ballSpeedY = 4;
+		ballSpeedY = 0;
+		rally = 0;
+		bg  = loadImage("bg.png");
+		
 	}
 
 	public void draw() {
-
 		// Clear the background of the window
-		background(255, 255, 255);
+		background(bg);
 		drawPaddles();
 		movePaddles(player1);
 		movePaddles(player2);
-		fill(255);
 		// moving the ball and bouncing the ball of boarder
-		isHittingPlayer(ballX, ballY);
+		isHittingPaddles(ballX, ballY);
 		moveBall();
 		drawBall();
 		displayScore();
+		displayRally();
 		gameOver();
 
 	}
 
+	// display ball on screen
 	public void drawBall() {
+		fill(255);
 		ellipse(ballX, ballY, radius * 2, radius * 2);
 		fill(0);
 	}
@@ -73,58 +87,67 @@ public class Pong extends PApplet {
 		ballX += (ballSpeedX * ballDirectionX);
 		ballY += (ballSpeedY * ballDirectionY);
 
-		if (ballX > 620) {
+		if (ballX > width) {
 			player1.addScore();
 			setup();
-		} else if (ballX < radius + 4) {
+		} else if (ballX < radius) {
 			player2.addScore();
 			setup();
 
 		}
-		if (ballY > height - radius + 4 || ballY < radius + 4) {
+		if (ballY > height - radius + 5 || ballY < radius + 5) {
 			ballDirectionY *= -1;
 			// System.out.println("test Y " + ballDirectionY);
 		}
 	}
 
-	public boolean isHittingPlayer(int ballPosX, int ballPosY) {
+	// checks to see if its hitting the paddle, and reacts
+	public boolean isHittingPaddles(int ballPosX, int ballPosY) {
 		// Checks to see whether the ball and paddle are at the same X co-ordinate
-		if (ballPosX - radius + 4 < (player1.getWidth() + player1.getPosX())) {
+		if (ballPosX - radius + 5 < (player1.getWidth() + player1.getPosX())
+				&& ballPosX - radius + 5 > (player1.getPosX() + 5)) {
 			// TODO fix bounce of edges
 			// Checks to see if the ball is in-line with any of the paddle
 			if (((player1.getPosY() + player1.getHeight()) > ballPosY) && (player1.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
+				rally += 1;
 				return true;
 			}
-		} else if (ballPosX - radius + 4 > 610) {
+		} else if (ballPosX - radius + 5 >= 610 && ballPosX - radius + 5 < 615) {
 			// TODO fix bounce of edges
 			if (((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
+				rally += 1;
 				return true;
 			}
 		}
 		return false;
 	}
 
+	// draws the paddles on the screen
 	public void drawPaddles() {
+		fill(255);
 		rect(player1.getPosX(), player1.getPosY(), player1.getWidth(), player1.getHeight());
 		rect(player2.getPosX(), player2.getPosY(), player2.getWidth(), player2.getHeight());
+		fill(0);
 	}
 
 	// Display scores on screen
 	public void displayScore() {
+		fill(169,169,169);
 		textSize(50);
 		text(player1.getScore(), 100, 40);
 		textSize(50);
 		text(player2.getScore(), width - 100, 40);
+		fill(0);
 	}
 
 	// Checks to see if the player has won the game
 	public void gameOver() {
-		if (player1.getScore() >= 10) {
+		if (player1.getScore() >= winScore) {
 			endGame(player1);
 
-		} else if (player2.getScore() >= 10) {
+		} else if (player2.getScore() >= winScore) {
 			endGame(player2);
 		}
 	}
@@ -182,4 +205,13 @@ public class Pong extends PApplet {
 
 	}
 
+	public void displayRally() {
+		if (rally >= 10) {
+			fill(169,169,169); //changes colour of text
+			textSize(20);
+			text("Rally:     " + rally, (width / 2) - 70, height - 50);
+			fill(0); //reset colour
+
+		}
+	}
 }
