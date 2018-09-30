@@ -28,8 +28,8 @@ public class Pong extends PApplet {
 	private boolean gameFlag = true;
 	// keeps track of how many time the players have hit the ball between them
 	private int rally = 0;
-	
-	//Stores background image
+
+	// Stores background image
 	private PImage bg;
 
 	// Player paddles
@@ -44,7 +44,7 @@ public class Pong extends PApplet {
 	public void settings() {
 		// Set our window size
 		size(width, height);
-		
+
 	}
 
 	public void setup() {
@@ -55,8 +55,8 @@ public class Pong extends PApplet {
 		ballSpeedX = 4;
 		ballSpeedY = 0;
 		rally = 0;
-		bg  = loadImage("bg.png");
-		
+		bg = loadImage("bg.png");
+
 	}
 
 	public void draw() {
@@ -134,7 +134,7 @@ public class Pong extends PApplet {
 
 	// Display scores on screen
 	public void displayScore() {
-		fill(169,169,169);
+		fill(169, 169, 169);
 		textSize(50);
 		text(player1.getScore(), 100, 40);
 		textSize(50);
@@ -207,10 +207,10 @@ public class Pong extends PApplet {
 
 	public void displayRally() {
 		if (rally >= 10) {
-			fill(169,169,169); //changes colour of text
+			fill(169, 169, 169); // changes colour of text
 			textSize(20);
 			text("Rally:     " + rally, (width / 2) - 70, height - 50);
-			fill(0); //reset colour
+			fill(0); // reset colour
 
 		}
 	}
