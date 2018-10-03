@@ -1,5 +1,11 @@
 package uk.ac.yorksj.year2.sem1.assignment1;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -22,7 +28,7 @@ public class Pong extends PApplet {
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 	// set win score here
-	final private int winScore = 10;
+	final private int winScore = 2;
 
 	// flag for the game over
 	private boolean gameFlag = true;
@@ -31,6 +37,13 @@ public class Pong extends PApplet {
 
 	// Stores background image
 	private PImage bg;
+
+	// file path and name
+	private File file = new File("highScores.txt");
+	// Stores the file high score when program starts
+	private ArrayList<highScore> scores = new ArrayList<highScore>();
+	// Stores the highest score out of the game
+	private int highestRally;
 
 	// Player paddles
 	private paddle player1 = new paddle(20, 0, 10, 80, 255, "player 1");
@@ -50,28 +63,87 @@ public class Pong extends PApplet {
 	public void setup() {
 		frameRate(60);
 		smooth();
+		reset();
+		highestRally = 0;
+		bg = loadImage("bg.png");
+
+		if (file.exists()) {
+			readFile();
+		}
+
+	}
+
+	public void reset() {
 		ballX = width / 2;
 		ballY = height / 2;
 		ballSpeedX = 4;
 		ballSpeedY = 0;
+
 		rally = 0;
-		bg = loadImage("bg.png");
+	}
+
+	public void readFile() {
+
+		try {
+			Scanner fileSc = new Scanner(file);
+
+			while (fileSc.hasNextLine()) {
+				String temp = fileSc.nextLine();
+				String[] parts = temp.split(" ");
+				scores.add(new highScore(parts[0], Integer.parseInt(parts[1])));
+			}
+			fileSc.close();
+
+		} catch (FileNotFoundException e) {
+			System.err.println("[ERROR] File does not found");
+		}
+
+	}
+
+	public void writeFile() {
+		try {
+			PrintWriter pw = new PrintWriter(file);
+			for (highScore a : scores) {
+				pw.println(a.getName() + " " + a.getScore());
+			}
+			pw.close();
+
+		} catch (FileNotFoundException e) {
+			System.err.println("[ERROR] File not found");
+		}
+	}
+
+	public void displayHighScores() {
+
+		if (scores.size() > 0) {
+			PImage bgFinish = loadImage("bgFinish.png");
+			background(bgFinish);
+			for (int i = 0; i < scores.size(); i++) {
+				fill(255);
+				text("TOP 5 Rallies", ((width / 2) - 70), (215 - 25));
+				text((i + 1) + ". " + scores.get(i).getName() + " " + scores.get(i).getScore(), ((width / 2) - 70),
+						215 + (30 * i));
+				fill(0);
+			}
+		}
 
 	}
 
 	public void draw() {
 		// Clear the background of the window
-		background(bg);
-		drawPaddles();
-		movePaddles(player1);
-		movePaddles(player2);
-		// moving the ball and bouncing the ball of boarder
-		isHittingPaddles(ballX, ballY);
-		moveBall();
-		drawBall();
-		displayScore();
-		displayRally();
-		gameOver();
+		if (gameFlag == true) {
+			background(bg);
+			drawPaddles();
+			movePaddles(player1);
+			movePaddles(player2);
+			// moving the ball and bouncing the ball of boarder
+			isHittingPaddles(ballX, ballY);
+			moveBall();
+			drawBall();
+			displayScore();
+			displayRally();
+			gameOver();
+		}
 
 	}
 
@@ -89,10 +161,10 @@ public class Pong extends PApplet {
 
 		if (ballX > width) {
 			player1.addScore();
-			setup();
+			reset();
 		} else if (ballX < radius) {
 			player2.addScore();
-			setup();
+			reset();
 
 		}
 		if (ballY > height - radius + 5 || ballY < radius + 5) {
@@ -106,7 +178,6 @@ public class Pong extends PApplet {
 		// Checks to see whether the ball and paddle are at the same X co-ordinate
 		if (ballPosX - radius + 5 < (player1.getWidth() + player1.getPosX())
 				&& ballPosX - radius + 5 > (player1.getPosX() + 5)) {
-			// TODO fix bounce of edges
 			// Checks to see if the ball is in-line with any of the paddle
 			if (((player1.getPosY() + player1.getHeight()) > ballPosY) && (player1.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
@@ -114,7 +185,6 @@ public class Pong extends PApplet {
 				return true;
 			}
 		} else if (ballPosX - radius + 5 >= 610 && ballPosX - radius + 5 < 615) {
-			// TODO fix bounce of edges
 			if (((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
 				rally += 1;
@@ -150,16 +220,27 @@ public class Pong extends PApplet {
 		} else if (player2.getScore() >= winScore) {
 			endGame(player2);
 		}
+
 	}
 
 	// Stops games movement, when either player wins
 	public void endGame(paddle name) {
+		fill(255);
 		textSize(26);
 		text(name.getName() + " wins!", (width / 2) - 100, 40);
+		fill(0);
 		ballSpeedX = 0;
 		ballSpeedY = 0;
 		gameFlag = false;
-
+		// Update high scores
+		displayHighScores();
+		for (int i = 0; i < scores.size(); i++) {
+			if (highestRally > scores.get(i).getScore()) {
+				scores.set(i, new highScore("test1", highestRally));
+				break;
+			}
+		}
+		writeFile();
 	}
 
 	// Creates keyboard input for players to use
@@ -175,7 +256,7 @@ public class Pong extends PApplet {
 	// Update position of paddles and restricts paddles going off the screen
 	public void movePaddles(paddle name) {
 
-		if (name.getIsUp() && name.getPosY() > 5)
+		if (name.getIsUp() && name.getPosY() > 0)
 			name.subPosY();
 		if (name.getIsDown() && name.getPosY() < (height - name.getHeight()))
 			name.addPosY();
@@ -189,7 +270,7 @@ public class Pong extends PApplet {
 			if (key == 'w' || key == 'W') {
 				player1.setIsUp(flag);
 			}
-			if (key == 's' | key == 'S') {
+			if (key == 's' || key == 'S') {
 				player1.setIsDown(flag);
 			}
 			if (keyCode == UP) {
@@ -198,7 +279,6 @@ public class Pong extends PApplet {
 			}
 			if (keyCode == DOWN) {
 				player2.setIsDown(flag);
-				;
 			}
 
 		}
@@ -213,5 +293,9 @@ public class Pong extends PApplet {
 			fill(0); // reset colour
 
 		}
+		if (rally > highestRally) {
+			highestRally = rally;
+		}
+
 	}
 }
