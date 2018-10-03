@@ -115,7 +115,7 @@ public class Pong extends PApplet {
 
 	// Write high scores, and change background
 	public void displayHighScores() {
-
+		
 		if (scores.size() > 0) {
 			PImage bgFinish = loadImage("bgFinish.png");
 			background(bgFinish);
@@ -227,6 +227,8 @@ public class Pong extends PApplet {
 
 	// Stops games movement, when either player wins
 	public void endGame(paddle name) {
+		Scanner sc = new Scanner(System.in);
+		String teamName = "";
 		fill(255);
 		textSize(26);
 		text(name.getName() + " wins!", (width / 2) - 100, 40);
@@ -235,14 +237,22 @@ public class Pong extends PApplet {
 		ballSpeedY = 0;
 		gameFlag = false;
 		// Update high scores
-		displayHighScores();
+		
 		for (int i = 0; i < scores.size(); i++) {
 			if (highestRally > scores.get(i).getScore()) {
-				scores.set(i, new highScore("test1", highestRally));
+				
+				System.out.println("Your rallies are in the top 5 \n please enter a team name: \n (No bigger than 7 characters)" );
+				teamName = sc.nextLine();
+				while (teamName.length() > 7) {
+					System.out.println("Invalid Input");
+					teamName = sc.nextLine();
+				}
+				scores.set(i, new highScore(teamName, highestRally));
 				break;
 			}
 		}
 		writeFile();
+		displayHighScores();
 	}
 
 	// Creates keyboard input for players to use
