@@ -115,7 +115,7 @@ public class Pong extends PApplet {
 
 	// Write high scores, and change background
 	public void displayHighScores() {
-		
+
 		if (scores.size() > 0) {
 			PImage bgFinish = loadImage("bgFinish.png");
 			background(bgFinish);
@@ -237,16 +237,18 @@ public class Pong extends PApplet {
 		ballSpeedY = 0;
 		gameFlag = false;
 		// Update high scores
-		
+
 		for (int i = 0; i < scores.size(); i++) {
 			if (highestRally > scores.get(i).getScore()) {
-				
-				System.out.println("Your rallies are in the top 5 \n please enter a team name: \n (No bigger than 7 characters)" );
+
+				System.out.println(
+						"Your rallies are in the top 5 \n please enter a team name: \n (No bigger than 7 characters)");
 				teamName = sc.nextLine();
 				while (teamName.length() > 7) {
 					System.out.println("Invalid Input");
 					teamName = sc.nextLine();
 				}
+				sc.close();
 				scores.set(i, new highScore(teamName, highestRally));
 				break;
 			}
