@@ -113,11 +113,13 @@ public class Pong extends PApplet {
 		}
 	}
 
+	// Write high scores, and change background
 	public void displayHighScores() {
 
 		if (scores.size() > 0) {
 			PImage bgFinish = loadImage("bgFinish.png");
 			background(bgFinish);
+
 			for (int i = 0; i < scores.size(); i++) {
 				fill(255);
 				text("TOP 5 Rallies", ((width / 2) - 70), (215 - 25));
@@ -285,6 +287,7 @@ public class Pong extends PApplet {
 
 	}
 
+	// display rally, and work out highest rally
 	public void displayRally() {
 		if (rally >= 10) {
 			fill(169, 169, 169); // changes colour of text
