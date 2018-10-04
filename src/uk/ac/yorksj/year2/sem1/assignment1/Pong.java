@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -32,6 +31,8 @@ public class Pong extends PApplet {
 
 	// flag for the game over
 	private boolean gameFlag = true;
+
+	private int highScore = -1;
 	// keeps track of how many time the players have hit the ball between them
 	private int rally = 0;
 
@@ -44,6 +45,8 @@ public class Pong extends PApplet {
 	private ArrayList<highScore> scores = new ArrayList<highScore>();
 	// Stores the highest score out of the game
 	private int highestRally;
+
+	private String userInput = "";
 
 	// Player paddles
 	private paddle player1 = new paddle(20, 0, 10, 80, 255, "player 1");
@@ -77,7 +80,7 @@ public class Pong extends PApplet {
 		ballX = width / 2;
 		ballY = height / 2;
 		ballSpeedX = 4;
-		ballSpeedY = 0;
+		ballSpeedY = 4;
 
 		rally = 0;
 	}
@@ -101,16 +104,18 @@ public class Pong extends PApplet {
 	}
 
 	public void writeFile() {
+
 		try {
 			PrintWriter pw = new PrintWriter(file);
-			for (highScore a : scores) {
-				pw.println(a.getName() + " " + a.getScore());
+			for (int i = 0; i < 5; i++) {
+				pw.println(scores.get(i).getName() + " " + scores.get(i).getScore());
 			}
 			pw.close();
 
 		} catch (FileNotFoundException e) {
 			System.err.println("[ERROR] File not found");
 		}
+		displayHighScores();
 	}
 
 	// Write high scores, and change background
@@ -120,7 +125,7 @@ public class Pong extends PApplet {
 			PImage bgFinish = loadImage("bgFinish.png");
 			background(bgFinish);
 
-			for (int i = 0; i < scores.size(); i++) {
+			for (int i = 0; i < 5; i++) {
 				fill(255);
 				text("TOP 5 Rallies", ((width / 2) - 70), (215 - 25));
 				text((i + 1) + ". " + scores.get(i).getName() + " " + scores.get(i).getScore(), ((width / 2) - 70),
@@ -144,7 +149,12 @@ public class Pong extends PApplet {
 			drawBall();
 			displayScore();
 			displayRally();
-			gameOver();
+		}
+		if ((gameOver() || gameFlag == false) && highScore == -1) {
+			highScore_();
+		}
+		if (!gameFlag && highScore >= 0) {
+			updateHighScore();
 		}
 
 	}
@@ -215,20 +225,21 @@ public class Pong extends PApplet {
 	}
 
 	// Checks to see if the player has won the game
-	public void gameOver() {
+	public boolean gameOver() {
 		if (player1.getScore() >= winScore) {
 			endGame(player1);
-
+			return true;
 		} else if (player2.getScore() >= winScore) {
 			endGame(player2);
+			return true;
 		}
+
+		return false;
 
 	}
 
 	// Stops games movement, when either player wins
 	public void endGame(paddle name) {
-		Scanner sc = new Scanner(System.in);
-		String teamName = "";
 		fill(255);
 		textSize(26);
 		text(name.getName() + " wins!", (width / 2) - 100, 40);
@@ -238,33 +249,59 @@ public class Pong extends PApplet {
 		gameFlag = false;
 		// Update high scores
 
-		for (int i = 0; i < scores.size(); i++) {
-			if (highestRally > scores.get(i).getScore()) {
-
-				System.out.println(
-						"Your rallies are in the top 5 \n please enter a team name: \n (No bigger than 7 characters)");
-				teamName = sc.nextLine();
-				while (teamName.length() > 7) {
-					System.out.println("Invalid Input");
-					teamName = sc.nextLine();
-				}
-				sc.close();
-				scores.set(i, new highScore(teamName, highestRally));
-				break;
-			}
-		}
-		writeFile();
-		displayHighScores();
 	}
 
 	// Creates keyboard input for players to use
 	public void keyPressed() {
-		setMovePaddles(keyCode, key, true);
+		if (gameFlag) {
+			setMovePaddles(keyCode, key, true);
+		} else if (highScore >= 0) {
+			if (keyCode == ENTER || key == '\n') {
+				
+			}else
+			userInput += key;
+		}
 	}
 
 	// false key interaction keyboard input
 	public void keyReleased() {
-		setMovePaddles(keyCode, key, false);
+		if (gameFlag) {
+			setMovePaddles(keyCode, key, false);
+		} else if (highScore >= 0) {
+
+		} else {
+		}
+
+	}
+
+	public void highScore_() {
+		for (int i = 0; i < scores.size(); i++) {
+			if (highestRally > scores.get(i).getScore()) {
+				highScore = i;
+				break;
+			}
+
+		}
+	}
+
+	public void updateHighScore() {
+
+		background(0);
+		fill(255);
+		textSize(12);
+		text("You have acheived a high score in the top 5 rallies \n Please enter you team name down below: \n (no bigger than 7 characters)",
+				width / 2, height / 2);
+		text("\n \n \nName:" + userInput, (width / 2), (height / 2) + 30);
+		fill(0);
+		textSize(20);
+		if (key == '\n' || keyCode == ENTER) {
+			scores.add(highScore, new highScore(userInput, highestRally));
+			highScore = -10;
+			userInput = "";
+			
+			writeFile();
+		}
+
 	}
 
 	// Update position of paddles and restricts paddles going off the screen
