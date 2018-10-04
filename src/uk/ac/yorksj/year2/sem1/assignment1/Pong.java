@@ -104,7 +104,7 @@ public class Pong extends PApplet {
 	}
 
 	public void writeFile() {
-
+		textSize(26);
 		try {
 			PrintWriter pw = new PrintWriter(file);
 			for (int i = 0; i < 5; i++) {
@@ -149,14 +149,17 @@ public class Pong extends PApplet {
 			drawBall();
 			displayScore();
 			displayRally();
+			gameOver();
 		}
-		if ((gameOver() || gameFlag == false) && highScore == -1) {
+		else if (gameFlag == false && highScore == -1) {
 			highScore_();
 		}
-		if (!gameFlag && highScore >= 0) {
+		else if (!gameFlag && highScore >= 0) {
 			updateHighScore();
 		}
-
+		if (!gameFlag) {
+			writeFile();
+		}
 	}
 
 	// display ball on screen
@@ -257,9 +260,9 @@ public class Pong extends PApplet {
 			setMovePaddles(keyCode, key, true);
 		} else if (highScore >= 0) {
 			if (keyCode == ENTER || key == '\n') {
-				
-			}else
-			userInput += key;
+
+			} else
+				userInput += key;
 		}
 	}
 
@@ -298,7 +301,7 @@ public class Pong extends PApplet {
 			scores.add(highScore, new highScore(userInput, highestRally));
 			highScore = -10;
 			userInput = "";
-			
+
 			writeFile();
 		}
 
