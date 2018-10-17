@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import processing.core.PApplet;
 import processing.core.PImage;
-
+import processing.sound.*;
 public class Pong extends PApplet {
 	// x position of the ball
 	private int ballX;
@@ -27,11 +27,11 @@ public class Pong extends PApplet {
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 	// set win score here
-	final private int winScore = 2;
+	final private int winScore = 10;
 
 	// flag for the game over
 	private boolean gameFlag = true;
-
+    // flag used for checking highScores
 	private int highScore = -1;
 	// keeps track of how many time the players have hit the ball between them
 	private int rally = 0;
@@ -49,8 +49,11 @@ public class Pong extends PApplet {
 	private String userInput = "";
 
 	// Player paddles
-	private paddle player1 = new paddle(20, 0, 10, 80, 255, "player 1");
-	private paddle player2 = new paddle((width - 20), 0, 10, 80, 255, "player 2");
+	private paddle player1 = new paddle(20, 0, 10, 80,"player 1");
+	private paddle player2 = new paddle((width - 20), 0, 10, 80, "player 2");
+	private SoundFile batHit;
+	private SoundFile edgeHit;
+	private SoundFile miss;
 
 	public static void main(String[] args) {
 		// Set up the processing library
@@ -60,6 +63,10 @@ public class Pong extends PApplet {
 	public void settings() {
 		// Set our window size
 		size(width, height);
+		//Initialising sound files 
+		batHit = new SoundFile(this, "hit.wav");
+		edgeHit = new SoundFile(this, "bounce.wav" );
+		miss = new SoundFile(this, "miss.wav");
 
 	}
 
@@ -69,7 +76,7 @@ public class Pong extends PApplet {
 		reset();
 		highestRally = 0;
 		bg = loadImage("bg.png");
-
+        //prevents error if file doesn't exist
 		if (file.exists()) {
 			readFile();
 		}
@@ -176,20 +183,23 @@ public class Pong extends PApplet {
 
 		if (ballX > width) {
 			player1.addScore();
+			miss.play();
 			reset();
 		} else if (ballX < radius) {
 			player2.addScore();
+			miss.play();
 			reset();
 
 		}
 		if (ballY > height - radius + 5 || ballY < radius + 5) {
 			ballDirectionY *= -1;
+			edgeHit.play();
 			// System.out.println("test Y " + ballDirectionY);
 		}
 	}
 
 	// checks to see if its hitting the paddle, and reacts
-	public boolean isHittingPaddles(int ballPosX, int ballPosY) {
+	public void isHittingPaddles(int ballPosX, int ballPosY) {
 		// Checks to see whether the ball and paddle are at the same X co-ordinate
 		if (ballPosX - radius + 5 < (player1.getWidth() + player1.getPosX())
 				&& ballPosX - radius + 5 > (player1.getPosX() + 5)) {
@@ -197,16 +207,16 @@ public class Pong extends PApplet {
 			if (((player1.getPosY() + player1.getHeight()) > ballPosY) && (player1.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
 				rally += 1;
-				return true;
+				batHit.play();
 			}
 		} else if (ballPosX - radius + 5 >= 610 && ballPosX - radius + 5 < 615) {
 			if (((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) {
 				ballDirectionX *= -1;
 				rally += 1;
-				return true;
+				batHit.play();
 			}
 		}
-		return false;
+		
 	}
 
 	// draws the paddles on the screen

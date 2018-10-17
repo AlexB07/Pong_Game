@@ -6,7 +6,6 @@ public class paddle{
 	private int height;
 	private int posX;
 	private int posY;
-	private int colour;
 	private String name;
 	private int score;
 	private boolean isUp, isDown;
@@ -18,12 +17,11 @@ public class paddle{
 	}
 	
 	
-	public paddle(int x, int y, int w, int h, int col, String s) {
+	public paddle(int x, int y, int w, int h,String s) {
 		this.posX = x;
 		this.posY = y;
 		this.width = w;
 		this.height = h;
-		this.colour = col;
 		this.score = 0;
 		this.name = s;
 	}
