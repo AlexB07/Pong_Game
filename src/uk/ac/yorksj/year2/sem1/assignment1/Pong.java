@@ -8,6 +8,7 @@ import java.util.Scanner;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.sound.*;
+
 public class Pong extends PApplet {
 	// x position of the ball
 	private int ballX;
@@ -27,11 +28,11 @@ public class Pong extends PApplet {
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 	// set win score here
-	final private int winScore = 10;
+	final private int winScore = 2;
 
 	// flag for the game over
 	private boolean gameFlag = true;
-    // flag used for checking highScores
+	// flag used for checking highScores
 	private int highScore = -1;
 	// keeps track of how many time the players have hit the ball between them
 	private int rally = 0;
@@ -49,7 +50,7 @@ public class Pong extends PApplet {
 	private String userInput = "";
 
 	// Player paddles
-	private paddle player1 = new paddle(20, 0, 10, 80,"player 1");
+	private paddle player1 = new paddle(20, 0, 10, 80, "player 1");
 	private paddle player2 = new paddle((width - 20), 0, 10, 80, "player 2");
 	private SoundFile batHit;
 	private SoundFile edgeHit;
@@ -63,9 +64,9 @@ public class Pong extends PApplet {
 	public void settings() {
 		// Set our window size
 		size(width, height);
-		//Initialising sound files 
+		// Initialising sound files
 		batHit = new SoundFile(this, "hit.wav");
-		edgeHit = new SoundFile(this, "bounce.wav" );
+		edgeHit = new SoundFile(this, "bounce.wav");
 		miss = new SoundFile(this, "miss.wav");
 
 	}
@@ -76,7 +77,7 @@ public class Pong extends PApplet {
 		reset();
 		highestRally = 0;
 		bg = loadImage("bg.png");
-        //prevents error if file doesn't exist
+		// prevents error if file doesn't exist
 		if (file.exists()) {
 			readFile();
 		}
@@ -87,8 +88,7 @@ public class Pong extends PApplet {
 		ballX = width / 2;
 		ballY = height / 2;
 		ballSpeedX = 4;
-		ballSpeedY = 4;
-
+		ballSpeedY = 0;
 		rally = 0;
 	}
 
@@ -157,14 +157,13 @@ public class Pong extends PApplet {
 			displayScore();
 			displayRally();
 			gameOver();
-		}
-		else if (gameFlag == false && highScore == -1) {
+		} else if (gameFlag == false && highScore == -1) {
 			highScore_();
-		}
-		else if (!gameFlag && highScore >= 0) {
+		} else if (!gameFlag && highScore >= 0) {
 			updateHighScore();
 		}
-		if (!gameFlag) {
+		if (!gameFlag && highScore == -1) {
+			System.out.println("gameflag " + gameFlag + " highscore " + highScore);
 			writeFile();
 		}
 	}
@@ -185,10 +184,12 @@ public class Pong extends PApplet {
 			player1.addScore();
 			miss.play();
 			reset();
+			System.out.println(highScore);
 		} else if (ballX < radius) {
 			player2.addScore();
 			miss.play();
 			reset();
+			System.out.println(highScore);
 
 		}
 		if (ballY > height - radius + 5 || ballY < radius + 5) {
@@ -198,6 +199,9 @@ public class Pong extends PApplet {
 		}
 	}
 
+	// TODO fix ball missing paddle when x/y coordinates of the top of the ball,
+	// arent where the bottom of the ball co-ordinates are.
+	//
 	// checks to see if its hitting the paddle, and reacts
 	public void isHittingPaddles(int ballPosX, int ballPosY) {
 		// Checks to see whether the ball and paddle are at the same X co-ordinate
@@ -216,7 +220,7 @@ public class Pong extends PApplet {
 				batHit.play();
 			}
 		}
-		
+
 	}
 
 	// draws the paddles on the screen
@@ -260,7 +264,6 @@ public class Pong extends PApplet {
 		ballSpeedX = 0;
 		ballSpeedY = 0;
 		gameFlag = false;
-		// Update high scores
 
 	}
 
@@ -295,6 +298,7 @@ public class Pong extends PApplet {
 			}
 
 		}
+		System.out.println(highScore);
 	}
 
 	public void updateHighScore() {
@@ -358,6 +362,7 @@ public class Pong extends PApplet {
 			fill(0); // reset colour
 
 		}
+		System.out.println("rally: " + rally + " highestRally " + highestRally);
 		if (rally > highestRally) {
 			highestRally = rally;
 		}
