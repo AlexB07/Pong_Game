@@ -15,9 +15,9 @@ public class Pong extends PApplet {
 	// y position of the ball
 	private int ballY;
 	// Ball speed in the x direction
-	private int ballSpeedX;
+	private double ballSpeedX;
 	// Ball speed in the y direction
-	private int ballSpeedY;
+	private double ballSpeedY;
 	// Width of our window
 	final private int width = 640;
 	// height of our window
@@ -29,7 +29,6 @@ public class Pong extends PApplet {
 	private int ballDirectionY = 1;
 	// set win score here
 	final private int winScore = 100;
-
 	// flag for the game over
 	private boolean gameFlag = true;
 	// flag used for checking highScores
@@ -46,6 +45,8 @@ public class Pong extends PApplet {
 	private ArrayList<highScore> scores = new ArrayList<highScore>();
 	// Stores the highest score out of the game
 	private int highestRally;
+	
+	private int movement = 7;
 
 	private String userInput = "";
 
@@ -90,6 +91,7 @@ public class Pong extends PApplet {
 		ballSpeedX = 4;
 		ballSpeedY = 4;
 		rally = 0;
+		movement = 7;
 	}
 
 	public void readFile() {
@@ -163,7 +165,6 @@ public class Pong extends PApplet {
 			updateHighScore();
 		}
 		if (!gameFlag && highScore == -1) {
-			System.out.println("gameflag " + gameFlag + " highscore " + highScore);
 			writeFile();
 		}
 	}
@@ -171,6 +172,7 @@ public class Pong extends PApplet {
 	// display ball on screen
 	public void drawBall() {
 		fill(255);
+		ellipseMode(CENTER);
 		ellipse(ballX, ballY, radius * 2, radius * 2);
 		fill(0);
 	}
@@ -184,24 +186,18 @@ public class Pong extends PApplet {
 			player1.addScore();
 			miss.play();
 			reset();
-			System.out.println(highScore);
 		} else if (ballX < radius) {
 			player2.addScore();
 			miss.play();
 			reset();
-			System.out.println(highScore);
 
 		}
 		if (ballY > height - radius + 5 || ballY < radius + 5) {
 			ballDirectionY *= -1;
 			edgeHit.play();
-			// System.out.println("test Y " + ballDirectionY);
 		}
 	}
 
-	// TODO fix ball missing paddle when x/y coordinates of the top of the ball,
-	// arent where the bottom of the ball co-ordinates are.
-	//
 	// checks to see if its hitting the paddle, and reacts
 	public void isHittingPaddles(int ballPosX, int ballPosY) {
 		// Checks to see whether the ball and paddle are at the same X co-ordinate
@@ -209,18 +205,31 @@ public class Pong extends PApplet {
 				&& ballPosX - radius + 5 > (player1.getPosX() + 5)) {
 			// Checks to see if the ball is in-line with any of the paddle
 			if (((player1.getPosY() + player1.getHeight()) > ballPosY) && (player1.getPosY() <= (ballPosY))) {
-				ballDirectionX *= -1;
-				rally += 1;
-				batHit.play();
+				updatePaddleObjects();
 			}
 		} else if ((ballPosX - radius + 5 >= 610 && ballPosX - radius + 5 < 615)) {
-			if ((((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) || (ballY + (radius*2-4)) <= player2.getPosY()) {
-				ballDirectionX *= -1;
-				rally += 1;
-				batHit.play();
+			if ((((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY)))) {
+				updatePaddleObjects();
 			}
 		}
 
+	}
+
+	//events and objects updated when ball hits paddle
+	public void updatePaddleObjects() {
+		ballDirectionX *= -1;
+		rally += 1;
+		batHit.play();
+		//Makes game harder after time, slows bat speed down
+		if (rally > 0 && movement > 2) {
+			if (rally % 10 == 0) {
+				movement--;
+			}
+			
+			if (rally > highestRally) {
+				highestRally = rally;
+			}
+		}
 	}
 
 	// draws the paddles on the screen
@@ -298,7 +307,6 @@ public class Pong extends PApplet {
 			}
 
 		}
-		System.out.println(highScore);
 	}
 
 	public void updateHighScore() {
@@ -325,9 +333,9 @@ public class Pong extends PApplet {
 	public void movePaddles(paddle name) {
 
 		if (name.getIsUp() && name.getPosY() > 0)
-			name.subPosY();
+			name.subPosY(movement);
 		if (name.getIsDown() && name.getPosY() < (height - name.getHeight()))
-			name.addPosY();
+			name.addPosY(movement);
 
 	}
 
@@ -362,10 +370,7 @@ public class Pong extends PApplet {
 			fill(0); // reset colour
 
 		}
-		System.out.println("rally: " + rally + " highestRally " + highestRally);
-		if (rally > highestRally) {
-			highestRally = rally;
-		}
 
 	}
+
 }
