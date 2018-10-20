@@ -28,7 +28,7 @@ public class Pong extends PApplet {
 	private int ballDirectionX = 1;
 	private int ballDirectionY = 1;
 	// set win score here
-	final private int winScore = 2;
+	final private int winScore = 100;
 
 	// flag for the game over
 	private boolean gameFlag = true;
@@ -88,7 +88,7 @@ public class Pong extends PApplet {
 		ballX = width / 2;
 		ballY = height / 2;
 		ballSpeedX = 4;
-		ballSpeedY = 0;
+		ballSpeedY = 4;
 		rally = 0;
 	}
 
@@ -213,8 +213,8 @@ public class Pong extends PApplet {
 				rally += 1;
 				batHit.play();
 			}
-		} else if (ballPosX - radius + 5 >= 610 && ballPosX - radius + 5 < 615) {
-			if (((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) {
+		} else if ((ballPosX - radius + 5 >= 610 && ballPosX - radius + 5 < 615)) {
+			if ((((player2.getPosY() + player2.getHeight()) > ballPosY) && (player2.getPosY() <= (ballPosY))) || (ballY + (radius*2-4)) <= player2.getPosY()) {
 				ballDirectionX *= -1;
 				rally += 1;
 				batHit.play();
