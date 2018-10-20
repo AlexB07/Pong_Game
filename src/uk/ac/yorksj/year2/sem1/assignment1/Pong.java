@@ -18,34 +18,30 @@ public class Pong extends PApplet {
 	private double ballSpeedX;
 	// Ball speed in the y direction
 	private double ballSpeedY;
+	// Ball direction
+	private int ballDirectionX = 1;
+	private int ballDirectionY = 1;
 	// Width of our window
 	final private int width = 640;
 	// height of our window
 	final private int height = 480;
 	// radius of the ball
 	final private int radius = 10;
-	// Ball direction
-	private int ballDirectionX = 1;
-	private int ballDirectionY = 1;
-	// set win score here
-	final private int winScore = 100;
 	// flag for the game over
 	private boolean gameFlag = true;
 	// flag used for checking highScores
 	private int highScore = -1;
 	// keeps track of how many time the players have hit the ball between them
 	private int rally = 0;
-
 	// Stores background image
 	private PImage bg;
-
 	// file path and name
-	private File file = new File("highScores.txt");
+	private final File file = new File("highScores.txt");
 	// Stores the file high score when program starts
 	private ArrayList<highScore> scores = new ArrayList<highScore>();
 	// Stores the highest score out of the game
 	private int highestRally;
-	
+
 	private int movement = 7;
 
 	private String userInput = "";
@@ -53,9 +49,13 @@ public class Pong extends PApplet {
 	// Player paddles
 	private paddle player1 = new paddle(20, 0, 10, 80, "player 1");
 	private paddle player2 = new paddle((width - 20), 0, 10, 80, "player 2");
+
+	// Sounds variables initiate later
 	private SoundFile batHit;
 	private SoundFile edgeHit;
 	private SoundFile miss;
+	// set win score here
+	final private int winScore = 10;
 
 	public static void main(String[] args) {
 		// Set up the processing library
@@ -78,18 +78,24 @@ public class Pong extends PApplet {
 		reset();
 		highestRally = 0;
 		bg = loadImage("bg.png");
+		ballSpeedX = 4;
+		ballSpeedY = 4;
 		// prevents error if file doesn't exist
 		if (file.exists()) {
 			readFile();
+		} else {
+			// If file doesn't exist, initiate array to write file and create one
+			for (int i = 0; i < 5; i++) {
+				scores.add(new highScore("init", 0));
+			}
 		}
 
 	}
 
+	// reset variables when player loses
 	public void reset() {
 		ballX = width / 2;
 		ballY = height / 2;
-		ballSpeedX = 4;
-		ballSpeedY = 4;
 		rally = 0;
 		movement = 7;
 	}
@@ -215,17 +221,17 @@ public class Pong extends PApplet {
 
 	}
 
-	//events and objects updated when ball hits paddle
+	// events and objects updated when ball hits paddle
 	public void updatePaddleObjects() {
 		ballDirectionX *= -1;
 		rally += 1;
 		batHit.play();
-		//Makes game harder after time, slows bat speed down
+		// Makes game harder after time, slows bat speed down
 		if (rally > 0 && movement > 2) {
 			if (rally % 10 == 0) {
 				movement--;
 			}
-			
+
 			if (rally > highestRally) {
 				highestRally = rally;
 			}
