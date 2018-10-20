@@ -1,21 +1,21 @@
 package uk.ac.yorksj.year2.sem1.assignment1;
 
-public class highScore {
+public class HighScore {
 
-	private String name;
-	private int score;
+    private String name;
+    private int score;
 
-	public highScore(String name_, int score_) {
-		this.name = name_;
-		this.score = score_;
-	}
+    public HighScore(String n, int s) {
+        this.name = n;
+        this.score = s;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public int getScore() {
-		return this.score;
-	}
+    public int getScore() {
+        return this.score;
+    }
 
 }
